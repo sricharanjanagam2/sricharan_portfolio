@@ -44,11 +44,30 @@ button{cursor:none}
 .loader-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--pink));animation:load 1.7s forwards}
 @keyframes load{to{width:100%}}
 
-/* 03 Cursor */
-.cursor,.cursor-dot{position:fixed;pointer-events:none;z-index:3000;transform:translate(-50%,-50%);border-radius:50%}
-.cursor{width:32px;height:32px;border:1px solid rgba(255,255,255,.65);transition:width .2s,height .2s,background .2s}
-.cursor-dot{width:5px;height:5px;background:#fff}
-.cursor.big{width:60px;height:60px;background:rgba(176,38,255,.12);border-color:var(--purple)}
+/* 03 Cursor – simple cinematic */
+*{cursor:none!important}
+#cDot{
+  position:fixed;pointer-events:none;z-index:9999;
+  width:5px;height:5px;border-radius:50%;background:#fff;
+  transform:translate(-50%,-50%);
+  transition:transform .1s ease;
+  will-change:left,top;
+}
+#cRing{
+  position:fixed;pointer-events:none;z-index:9998;
+  width:36px;height:36px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.5);
+  transform:translate(-50%,-50%);
+  transition:width .3s ease,height .3s ease,border-color .3s ease,box-shadow .3s ease;
+  will-change:left,top;
+}
+#cRing.hover{
+  width:54px;height:54px;
+  border-color:var(--purple);
+  box-shadow:0 0 20px rgba(176,38,255,.3);
+}
+#cDot.click{transform:translate(-50%,-50%) scale(0.5)}
+@media(max-width:650px){#cDot,#cRing{display:none}*{cursor:auto!important}}
 
 /* 04 Background blobs */
 .blob{position:fixed;width:430px;height:430px;border-radius:50%;filter:blur(150px);opacity:.13;z-index:-2;animation:float 12s ease-in-out infinite}
@@ -99,13 +118,67 @@ section{padding:100px 8%}
 .reveal{opacity:0;transform:translateY(35px);transition:.8s}
 .reveal.show{opacity:1;transform:none}
 
-/* 08 Featured project */
-.featured{display:grid;grid-template-columns:1.4fr .8fr;gap:22px}
-.featured-media{min-height:470px;border-radius:25px;overflow:hidden;position:relative;border:1px solid var(--line);background:#000;box-shadow:var(--shadow)}
-.featured-media video,.featured-media img{width:100%;height:100%;object-fit:cover}
-.featured-info{border:1px solid var(--line);border-radius:25px;padding:32px;background:var(--card);backdrop-filter:blur(18px);display:flex;flex-direction:column;justify-content:center}
+/* 08 Featured project – full-bleed cinematic section */
+.featured-section{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  min-height:520px;
+  overflow:hidden;
+  border-radius:0;
+  border:none;
+  box-shadow:none;
+  background:#000;
+  margin-left:calc(-8vw - 1px);
+  margin-right:calc(-8vw - 1px);
+  margin-bottom:40px;
+}
+/* Featured 02 sits directly in <main> — no section padding to break out of */
+#featuredSection2{
+  margin-left:0;
+  margin-right:0;
+  clip-path:polygon(0 4vw, 100% 0, 100% calc(100% - 4vw), 0 100%);
+  padding: 4vw 0; /* Add padding to compensate for the cut edges */
+}
+.featured-section video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.featured-section-overlay{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,transparent 45%)}
+.featured-section-content{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:flex-end;padding:52px 60px}
+.featured-section-meta{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.featured-play-btn{display:none}
+.featured-play-btn:hover{}
+/* Clickable featured section */
+.featured-section{cursor:pointer}
+.featured-section-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.featured-section-info{flex:1}
 .eyebrow{font-size:11px;letter-spacing:3px;color:var(--pink);font-weight:900}
-.featured-info h3{font-size:40px;line-height:1.05;margin:12px 0}
+.featured-section-info h3{font-size:clamp(36px,5vw,72px);line-height:1;letter-spacing:-2px;margin:10px 0 14px;color:#fff}
+.featured-section-info p{color:rgba(255,255,255,.72);max-width:520px;font-size:14px}
+.featured-section-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.featured-section-tags .tag{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);backdrop-filter:blur(8px);color:rgba(255,255,255,.8);padding:6px 12px;border-radius:20px;font-size:11px}
+.featured-section-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+/* Sound toggle button */
+.sound-btn{
+  position:absolute;
+  top:24px;
+  right:28px;
+  z-index:10;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(14px);
+  border:1.5px solid rgba(255,255,255,.28);
+  color:#fff;
+  font-size:20px;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:transform .25s,background .25s,border-color .25s,box-shadow .25s;
+}
+.sound-btn:hover{transform:scale(1.12);background:rgba(176,38,255,.45);border-color:var(--purple);box-shadow:0 0 30px rgba(176,38,255,.35)}
+.sound-btn.muted{opacity:.7}
+/* stats row */
+.featured-info{border:1px solid var(--line);border-radius:25px;padding:32px;background:var(--card);backdrop-filter:blur(18px);display:flex;flex-direction:column;justify-content:center}
 .tags{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
 .tag{border:1px solid var(--line);padding:6px 10px;border-radius:20px;color:var(--muted);font-size:11px}
 
@@ -147,28 +220,141 @@ section{padding:100px 8%}
 .slider-handle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:#fff;color:#111;display:grid;place-items:center;z-index:5;font-weight:900}
 .compare input{position:absolute;inset:0;width:100%;height:100%;opacity:0;z-index:6;cursor:ew-resize}
 
-/* 15 Portfolio */
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
-.filter{padding:9px 15px;border-radius:22px;border:1px solid var(--line);background:transparent;color:var(--text)}
+/* 15 Portfolio – cinematic cards */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.filter{padding:9px 15px;border-radius:22px;border:1px solid var(--line);background:transparent;color:var(--text);font-size:12px;font-weight:700;letter-spacing:.5px}
 .filter.active,.filter:hover{background:linear-gradient(90deg,var(--purple),var(--pink));border-color:transparent;color:#fff}
-.portfolio{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.project{overflow:hidden;padding:0}
-.project-media{height:235px;position:relative;background:#000;overflow:hidden}
-.project-media video{width:100%;height:100%;object-fit:cover;transition:.5s}
-.project:hover .project-media video{transform:scale(1.05)}
-.project-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.2);opacity:0;transition:.3s}
-.project:hover .project-overlay{opacity:1}
-.play{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18);backdrop-filter:blur(10px);color:#fff;font-size:20px}
-.project-body{padding:20px}.project-body h3{margin-bottom:5px}.project-body p{font-size:12px;color:var(--muted)}
+.portfolio{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.project{overflow:hidden;padding:0;border-radius:0;border:none;background:#000;position:relative;aspect-ratio:16/11;transition:none}
+.project:hover{transform:none;box-shadow:none;border-color:transparent}
+.project-media{
+  position:absolute;inset:0;
+  background:#000;overflow:hidden;
+}
+.project-media video{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .7s cubic-bezier(.25,.46,.45,.94),filter .5s ease;
+  filter:brightness(.85);
+}
+.project:hover .project-media video{
+  transform:scale(1.06);
+  filter:brightness(1);
+}
+/* Dark vignette always-on */
+.project-media::after{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.1) 50%,rgba(0,0,0,.3) 100%);
+  z-index:1;
+  transition:opacity .4s;
+}
+/* Category pill */
+.proj-cat{
+  position:absolute;top:14px;left:14px;z-index:4;
+  font-size:9px;font-weight:900;letter-spacing:2px;
+  padding:5px 10px;border-radius:20px;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);
+  text-transform:uppercase;
+}
+/* Info panel slides up from bottom */
+.proj-info{
+  position:absolute;bottom:0;left:0;right:0;z-index:3;
+  padding:20px 22px 22px;
+  transform:translateY(30px);
+  opacity:0;
+  transition:transform .4s cubic-bezier(.25,.46,.45,.94),opacity .4s ease;
+}
+.project:hover .proj-info{transform:translateY(0);opacity:1}
+.proj-info h3{
+  font-size:17px;font-weight:900;color:#fff;
+  margin-bottom:5px;letter-spacing:-.3px;
+}
+.proj-info p{font-size:11px;color:rgba(255,255,255,.65);margin-bottom:10px}
+.proj-tags{display:flex;gap:5px;flex-wrap:wrap}
+.proj-tags span{
+  font-size:9px;font-weight:700;letter-spacing:1px;
+  padding:3px 8px;border-radius:10px;
+  background:rgba(255,255,255,.1);backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);
+}
+/* Centered play button */
+.proj-play{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(.7);
+  z-index:4;
+  width:62px;height:62px;border-radius:50%;
+  background:rgba(255,255,255,.13);
+  backdrop-filter:blur(14px);
+  border:2px solid rgba(255,255,255,.4);
+  color:#fff;font-size:22px;
+  display:grid;place-items:center;
+  opacity:0;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .3s ease;
+}
+.project:hover .proj-play{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+}
+.proj-play:hover{
+  background:rgba(176,38,255,.45);
+  border-color:var(--purple);
+  box-shadow:0 0 30px rgba(176,38,255,.4);
+}
 
 /* 16 Testimonials */
 .testimonials{grid-template-columns:repeat(3,1fr)}
 .stars{color:#ffd43b;letter-spacing:2px}.client{margin-top:18px;font-weight:800;font-size:13px}
 
-/* 17 Instagram/reel gallery */
-.reel-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-.reel-tile{aspect-ratio:9/13;border-radius:14px;overflow:hidden;position:relative;background:#111;border:1px solid var(--line)}
-.reel-tile video{width:100%;height:100%;object-fit:cover}.reel-tile span{position:absolute;left:10px;bottom:10px;font-size:11px;background:rgba(0,0,0,.55);padding:5px 8px;border-radius:10px}
+/* 17 Short-form reel gallery */
+.reel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}
+.reel-tile{
+  aspect-ratio:9/16;overflow:hidden;position:relative;
+  background:#0a0a0f;
+}
+.reel-tile video{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .6s cubic-bezier(.25,.46,.45,.94),filter .5s ease;
+  filter:brightness(.8);
+}
+.reel-tile:hover video{transform:scale(1.05);filter:brightness(1)}
+/* Always-on gradient */
+.reel-tile::after{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 55%);
+  z-index:1;pointer-events:none;
+}
+/* Hover overlay */
+.reel-overlay{
+  position:absolute;inset:0;z-index:3;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:10px;
+  opacity:0;transition:opacity .35s ease;
+}
+.reel-tile:hover .reel-overlay{opacity:1}
+.reel-play{
+  width:52px;height:52px;border-radius:50%;
+  background:rgba(255,255,255,.14);backdrop-filter:blur(12px);
+  border:1.5px solid rgba(255,255,255,.4);
+  color:#fff;font-size:18px;
+  display:grid;place-items:center;
+  transform:scale(.8);transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s;
+}
+.reel-tile:hover .reel-play{transform:scale(1)}
+.reel-play:hover{background:rgba(176,38,255,.45);border-color:var(--purple);box-shadow:0 0 25px rgba(176,38,255,.4)}
+/* Bottom label */
+.reel-label{
+  position:absolute;bottom:12px;left:12px;z-index:2;
+  font-size:9px;font-weight:900;letter-spacing:2px;
+  color:rgba(255,255,255,.7);
+  padding:4px 8px;border-radius:8px;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.1);
+}
+@media(max-width:900px){.reel-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.reel-grid{grid-template-columns:repeat(2,1fr)}}
 
 /* 18 Pricing */
 .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
@@ -197,8 +383,10 @@ footer strong{color:var(--text)}
 #topBtn{position:fixed;right:22px;bottom:88px;width:43px;height:43px;border-radius:50%;display:none;background:var(--card);border:1px solid var(--line);color:var(--text);z-index:900}
 
 /* 23 Modal */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:1500;display:none;align-items:center;justify-content:center;padding:30px}
-.modal.show{display:flex}.modal video{max-width:100%;max-height:85vh}.close{position:absolute;right:25px;top:15px;color:#fff;font-size:38px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.98);z-index:1500;display:none;align-items:center;justify-content:center;padding:0}
+.modal.show{display:flex}
+.modal video{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain}
+.close{position:absolute;right:25px;top:15px;color:#fff;font-size:38px;z-index:2;background:rgba(0,0,0,.5);border-radius:50%;width:48px;height:48px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.2)}
 
 /* 24 Toast */
 .toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,30px);background:#17171e;color:#fff;border:1px solid var(--line);padding:10px 16px;border-radius:25px;opacity:0;transition:.3s;z-index:2500;font-size:12px}.toast.show{opacity:1;transform:translate(-50%,0)}
@@ -583,8 +771,8 @@ body[data-theme="rainbow"] .btn{color:#fff}
   </div>
 </div>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-dot" id="cursorDot"></div>
+<div id="cDot"></div>
+<div id="cRing"></div>
 <div class="blob one"></div><div class="blob two"></div>
 
 <nav>
@@ -604,7 +792,6 @@ body[data-theme="rainbow"] .btn{color:#fff}
 <!-- ===== EXTRA UI ===== -->
 <canvas id="particleCanvas"></canvas>
 
-<button class="color-picker" id="colorPicker" aria-label="Change color theme">🎨</button>
 <div class="color-panel" id="colorPanel">
   <h4>Choose a color</h4>
   <div class="palette">
@@ -687,18 +874,29 @@ body[data-theme="rainbow"] .btn{color:#fff}
     <div><h2 class="section-title">Featured <span>Work</span></h2><p class="subtitle">A cinematic showcase of selected projects.</p></div>
   </div>
 
-  <div class="featured">
-    <div class="featured-media">
-      <video controls poster="images/cinematic-thumbnail.jpg">
-        <source src="videos/cinematic-project.mp4" type="video/mp4">
-      </video>
-    </div>
-    <div class="featured-info">
-      <div class="eyebrow">FEATURED PROJECT / 01</div>
-      <h3>Cinematic<br>Project</h3>
-      <p class="subtitle">A cinematic edit combining storytelling, music, transitions, color grading and sound design.</p>
-      <div class="tags"><span class="tag">DaVinci Resolve</span><span class="tag">Color Grade</span><span class="tag">Sound Design</span><span class="tag">4K</span></div>
-      <a class="btn" href="#portfolio">Explore All Work →</a>
+  <div class="featured-section">
+    <video id="featuredBgVideo" autoplay muted loop playsinline poster="images/cinematic-thumbnail.jpg">
+      <source src="videos/cinematic-project.mp4" type="video/mp4">
+    </video>
+    <div class="featured-section-overlay"></div>
+
+    <!-- Sound toggle button -->
+    <button class="sound-btn muted" id="featuredSoundBtn" aria-label="Toggle sound">🔇</button>
+
+    <div class="featured-section-content">
+      <div class="featured-section-bottom">
+        <div class="featured-section-info">
+          <div class="eyebrow">FEATURED PROJECT / 01</div>
+          <h3>Visual<br>Project</h3>
+          <p>A cinematic edit combining storytelling, music, transitions, color grading and sound design.</p>
+          <div class="featured-section-tags">
+            <span class="tag">DaVinci Resolve</span><span class="tag">Color Grade</span><span class="tag">Sound Design</span><span class="tag">4K</span>
+          </div>
+        </div>
+        <div class="featured-section-actions">
+          <a class="btn" href="#portfolio" style="white-space:nowrap" onclick="event.stopPropagation()">Explore All Work →</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -718,6 +916,32 @@ body[data-theme="rainbow"] .btn{color:#fff}
     transitions, color grading, motion graphics and sound design.
   </p>
 </section>
+
+<!-- Featured Project 02 -->
+<div class="featured-section" id="featuredSection2">
+  <video id="featuredBgVideo2" autoplay muted loop playsinline>
+    <source src="videos/instagram-reel.mp4" type="video/mp4">
+  </video>
+  <div class="featured-section-overlay"></div>
+
+  <button class="sound-btn muted" id="featuredSoundBtn2" aria-label="Toggle sound">🔇</button>
+
+  <div class="featured-section-content">
+    <div class="featured-section-bottom">
+      <div class="featured-section-info">
+        <div class="eyebrow">FEATURED PROJECT / 02</div>
+        <h3>Instagram<br>Reel</h3>
+        <p>A fast-paced vertical edit perfect for Instagram and TikTok.</p>
+        <div class="featured-section-tags">
+          <span class="tag">Hook Edit</span><span class="tag">Captions</span><span class="tag">Motion</span><span class="tag">9:16</span>
+        </div>
+      </div>
+      <div class="featured-section-actions">
+        <a class="btn" href="#portfolio" style="white-space:nowrap" onclick="event.stopPropagation()">Explore All Work →</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <section id="services" class="reveal">
   <div class="section-head"><div><h2 class="section-title">What I <span>Do</span></h2><p class="subtitle">Editing built around your content and audience.</p></div></div>
@@ -812,29 +1036,65 @@ body[data-theme="rainbow"] .btn{color:#fff}
     <button class="filter" data-filter="reel">Reels</button><button class="filter" data-filter="youtube">YouTube</button><button class="filter" data-filter="event">Events</button>
   </div>
   <div class="portfolio">
-    <article class="card project" data-category="cinematic">
-      <div class="project-media"><video muted loop preload="metadata" poster="images/cinematic-thumbnail.jpg"><source src="videos/cinematic-project.mp4" type="video/mp4"></video><div class="project-overlay"><button class="play" onclick="openVideo('videos/cinematic-project.mp4')">▶</button></div></div>
-      <div class="project-body"><h3>Cinematic Project</h3><p>Color grade • Sound design • Storytelling</p></div>
+    <article class="card project" data-category="cinematic" onclick="openVideo('videos/cinematic-project.mp4')">
+      <div class="project-media"><video muted loop preload="metadata" poster="images/cinematic-thumbnail.jpg"><source src="videos/cinematic-project.mp4" type="video/mp4"></video></div>
+      <div class="proj-cat">Cinematic</div>
+      <button class="proj-play" aria-label="Play">▶</button>
+      <div class="proj-info">
+        <h3>Cinematic Project</h3>
+        <p>Color grade • Sound design • Storytelling</p>
+        <div class="proj-tags"><span>DaVinci Resolve</span><span>4K</span><span>Color Grade</span></div>
+      </div>
     </article>
-    <article class="card project" data-category="reel">
-      <div class="project-media"><video muted loop preload="metadata" poster="images/reel-thumbnail.jpg"><source src="videos/instagram-reel.mp4" type="video/mp4"></video><div class="project-overlay"><button class="play" onclick="openVideo('videos/instagram-reel.mp4')">▶</button></div></div>
-      <div class="project-body"><h3>Instagram Reel</h3><p>Vertical • Fast-paced • Captions</p></div>
+    <article class="card project" data-category="reel" onclick="openVideo('videos/instagram-reel.mp4')">
+      <div class="project-media"><video muted loop preload="metadata" poster="images/reel-thumbnail.jpg"><source src="videos/instagram-reel.mp4" type="video/mp4"></video></div>
+      <div class="proj-cat">Reel</div>
+      <button class="proj-play" aria-label="Play">▶</button>
+      <div class="proj-info">
+        <h3>Instagram Reel</h3>
+        <p>Vertical • Fast-paced • Captions</p>
+        <div class="proj-tags"><span>9:16</span><span>Hook Edit</span><span>Motion</span></div>
+      </div>
     </article>
-    <article class="card project" data-category="youtube">
-      <div class="project-media"><video muted loop preload="metadata" poster="images/youtube-thumbnail.jpg"><source src="videos/youtube-video.mp4" type="video/mp4"></video><div class="project-overlay"><button class="play" onclick="openVideo('videos/youtube-video.mp4')">▶</button></div></div>
-      <div class="project-body"><h3>YouTube Video</h3><p>Long-form • Graphics • Sound</p></div>
+    <article class="card project" data-category="youtube" onclick="openVideo('videos/youtube-video.mp4')">
+      <div class="project-media"><video muted loop preload="metadata" poster="images/youtube-thumbnail.jpg"><source src="videos/youtube-video.mp4" type="video/mp4"></video></div>
+      <div class="proj-cat">YouTube</div>
+      <button class="proj-play" aria-label="Play">▶</button>
+      <div class="proj-info">
+        <h3>YouTube Video</h3>
+        <p>Long-form • Graphics • Sound</p>
+        <div class="proj-tags"><span>Long-form</span><span>Graphics</span><span>Sound</span></div>
+      </div>
     </article>
-    <article class="card project" data-category="event">
-      <div class="project-media"><video muted loop preload="metadata" poster="images/event-thumbnail.jpg"><source src="videos/event-video.mp4" type="video/mp4"></video><div class="project-overlay"><button class="play" onclick="openVideo('videos/event-video.mp4')">▶</button></div></div>
-      <div class="project-body"><h3>Event Highlight</h3><p>Event film • Music • Highlights</p></div>
+    <article class="card project" data-category="event" onclick="openVideo('videos/event-video.mp4')">
+      <div class="project-media"><video muted loop preload="metadata" poster="images/event-thumbnail.jpg"><source src="videos/event-video.mp4" type="video/mp4"></video></div>
+      <div class="proj-cat">Event</div>
+      <button class="proj-play" aria-label="Play">▶</button>
+      <div class="proj-info">
+        <h3>Event Highlight</h3>
+        <p>Event film • Music • Highlights</p>
+        <div class="proj-tags"><span>Event Film</span><span>Music Sync</span></div>
+      </div>
     </article>
-    <article class="card project" data-category="reel">
-      <div class="project-media"><video muted loop preload="metadata"><source src="videos/reel-2.mp4" type="video/mp4"></video><div class="project-overlay"><button class="play" onclick="openVideo('videos/reel-2.mp4')">▶</button></div></div>
-      <div class="project-body"><h3>Social Reel</h3><p>Hook • Captions • Motion</p></div>
+    <article class="card project" data-category="reel" onclick="openVideo('videos/reel-2.mp4')">
+      <div class="project-media"><video muted loop preload="metadata"><source src="videos/reel-2.mp4" type="video/mp4"></video></div>
+      <div class="proj-cat">Reel</div>
+      <button class="proj-play" aria-label="Play">▶</button>
+      <div class="proj-info">
+        <h3>Social Reel</h3>
+        <p>Hook • Captions • Motion</p>
+        <div class="proj-tags"><span>Hook</span><span>Captions</span><span>Motion</span></div>
+      </div>
     </article>
-    <article class="card project" data-category="cinematic">
-      <div class="project-media"><video muted loop preload="metadata"><source src="videos/cinematic-2.mp4" type="video/mp4"></video><div class="project-overlay"><button class="play" onclick="openVideo('videos/cinematic-2.mp4')">▶</button></div></div>
-      <div class="project-body"><h3>Visual Story</h3><p>Cinematic • Atmosphere • Grade</p></div>
+    <article class="card project" data-category="cinematic" onclick="openVideo('videos/cinematic-2.mp4')">
+      <div class="project-media"><video muted loop preload="metadata"><source src="videos/cinematic-2.mp4" type="video/mp4"></video></div>
+      <div class="proj-cat">Cinematic</div>
+      <button class="proj-play" aria-label="Play">▶</button>
+      <div class="proj-info">
+        <h3>Visual Story</h3>
+        <p>Cinematic • Atmosphere • Grade</p>
+        <div class="proj-tags"><span>Film Grade</span><span>Atmosphere</span></div>
+      </div>
     </article>
   </div>
 </section>
@@ -842,12 +1102,31 @@ body[data-theme="rainbow"] .btn{color:#fff}
 <section class="reveal">
   <div class="section-head"><div><h2 class="section-title">Short-Form <span>Gallery</span></h2><p class="subtitle">A vertical reel-style showcase.</p></div></div>
   <div class="reel-grid">
-    <div class="reel-tile"><video muted loop autoplay playsinline><source src="videos/instagram-reel.mp4" type="video/mp4"></video><span>REEL 01</span></div>
-    <div class="reel-tile"><video muted loop autoplay playsinline><source src="videos/reel-2.mp4" type="video/mp4"></video><span>REEL 02</span></div>
-    <div class="reel-tile"><video muted loop autoplay playsinline><source src="videos/reel-3.mp4" type="video/mp4"></video><span>REEL 03</span></div>
-    <div class="reel-tile"><video muted loop autoplay playsinline><source src="videos/reel-4.mp4" type="video/mp4"></video><span>REEL 04</span></div>
-    <div class="reel-tile"><video muted loop autoplay playsinline><source src="videos/reel-5.mp4" type="video/mp4"></video><span>REEL 05</span></div>
-    <div class="reel-tile"><video muted loop autoplay playsinline><source src="videos/reel-6.mp4" type="video/mp4"></video><span>REEL 06</span></div>
+    <div class="reel-tile" onclick="openVideo('videos/instagram-reel.mp4')">
+      <video muted loop autoplay playsinline><source src="videos/instagram-reel.mp4" type="video/mp4"></video>
+      <div class="reel-overlay"><button class="reel-play">▶</button></div>
+      <div class="reel-label">REEL 01</div>
+    </div>
+    <div class="reel-tile" onclick="openVideo('videos/reel-2.mp4')">
+      <video muted loop autoplay playsinline><source src="videos/reel-2.mp4" type="video/mp4"></video>
+      <div class="reel-overlay"><button class="reel-play">▶</button></div>
+      <div class="reel-label">REEL 02</div>
+    </div>
+    <div class="reel-tile" onclick="openVideo('videos/reel-3.mp4')">
+      <video muted loop autoplay playsinline><source src="videos/reel-3.mp4" type="video/mp4"></video>
+      <div class="reel-overlay"><button class="reel-play">▶</button></div>
+      <div class="reel-label">REEL 03</div>
+    </div>
+    <div class="reel-tile" onclick="openVideo('videos/reel-4.mp4')">
+      <video muted loop autoplay playsinline><source src="videos/reel-4.mp4" type="video/mp4"></video>
+      <div class="reel-overlay"><button class="reel-play">▶</button></div>
+      <div class="reel-label">REEL 04</div>
+    </div>
+    <div class="reel-tile" onclick="openVideo('videos/reel-5.mp4')">
+      <video muted loop autoplay playsinline><source src="videos/reel-5.mp4" type="video/mp4"></video>
+      <div class="reel-overlay"><button class="reel-play">▶</button></div>
+      <div class="reel-label">REEL 05</div>
+    </div>
   </div>
 </section>
 
@@ -989,16 +1268,35 @@ body[data-theme="rainbow"] .btn{color:#fff}
 /* 01 Loader */
 window.addEventListener("load",()=>setTimeout(()=>document.getElementById("loader").classList.add("hide"),900));
 
-/* 02 Cursor */
-const cursor=document.getElementById("cursor"),dot=document.getElementById("cursorDot");
-document.addEventListener("mousemove",e=>{
-  cursor.style.left=e.clientX+"px";cursor.style.top=e.clientY+"px";
-  dot.style.left=e.clientX+"px";dot.style.top=e.clientY+"px";
-});
-document.querySelectorAll("a,button,.card,.project-media").forEach(el=>{
-  el.addEventListener("mouseenter",()=>cursor.classList.add("big"));
-  el.addEventListener("mouseleave",()=>cursor.classList.remove("big"));
-});
+/* 02 Cursor – simple cinematic */
+(function(){
+  const dot=document.getElementById("cDot");
+  const ring=document.getElementById("cRing");
+  if(!dot||!ring)return;
+  let mx=window.innerWidth/2,my=window.innerHeight/2;
+  let rx=mx,ry=my;
+
+  document.addEventListener("mousemove",e=>{
+    mx=e.clientX;my=e.clientY;
+    dot.style.left=mx+"px";dot.style.top=my+"px";
+  });
+
+  (function loop(){
+    rx+=(mx-rx)*.1;
+    ry+=(my-ry)*.1;
+    ring.style.left=rx+"px";
+    ring.style.top=ry+"px";
+    requestAnimationFrame(loop);
+  })();
+
+  document.querySelectorAll("a,button,.card,.project-media,.featured-section,.reel-tile").forEach(el=>{
+    el.addEventListener("mouseenter",()=>ring.classList.add("hover"));
+    el.addEventListener("mouseleave",()=>ring.classList.remove("hover"));
+  });
+
+  document.addEventListener("mousedown",()=>dot.classList.add("click"));
+  document.addEventListener("mouseup",()=>dot.classList.remove("click"));
+})();
 
 /* 03 Mobile menu */
 document.getElementById("menuBtn").onclick=()=>document.getElementById("navLinks").classList.toggle("open");
@@ -1067,13 +1365,91 @@ document.querySelectorAll(".project-media video").forEach(v=>{
   v.addEventListener("mouseleave",()=>{v.pause();v.currentTime=0});
 });
 
+/* Featured Work: click anywhere on section to open fullscreen */
+const featuredSection=document.querySelector(".featured-section");
+if(featuredSection){
+  featuredSection.addEventListener("click",e=>{
+    if(e.target.closest(".sound-btn")||e.target.closest(".btn"))return;
+    openVideo('videos/cinematic-project.mp4');
+  });
+}
+
+/* Featured sound toggle */
+const featuredSoundBtn=document.getElementById("featuredSoundBtn");
+const featuredVid=document.getElementById("featuredBgVideo");
+if(featuredSoundBtn&&featuredVid){
+  featuredSoundBtn.addEventListener("click",()=>{
+    featuredVid.muted=!featuredVid.muted;
+    const isMuted=featuredVid.muted;
+    featuredSoundBtn.textContent=isMuted?"🔇":"🔊";
+    featuredSoundBtn.setAttribute("aria-label",isMuted?"Unmute video":"Mute video");
+    featuredSoundBtn.classList.toggle("muted",isMuted);
+    if(!isMuted){
+      featuredVid.volume=1;
+      featuredVid.play().catch(()=>{});
+    }
+  });
+}
+
+/* Featured 02: click + sound */
+const featuredSection2=document.getElementById("featuredSection2");
+if(featuredSection2){
+  featuredSection2.addEventListener("click",e=>{
+    if(e.target.closest(".sound-btn")||e.target.closest(".btn"))return;
+    openVideo('videos/instagram-reel.mp4');
+  });
+}
+const featuredSoundBtn2=document.getElementById("featuredSoundBtn2");
+const featuredVid2=document.getElementById("featuredBgVideo2");
+if(featuredSoundBtn2&&featuredVid2){
+  featuredSoundBtn2.addEventListener("click",()=>{
+    featuredVid2.muted=!featuredVid2.muted;
+    const isMuted=featuredVid2.muted;
+    featuredSoundBtn2.textContent=isMuted?"🔇":"🔊";
+    featuredSoundBtn2.setAttribute("aria-label",isMuted?"Unmute video":"Mute video");
+    featuredSoundBtn2.classList.toggle("muted",isMuted);
+    if(!isMuted){featuredVid2.volume=1;featuredVid2.play().catch(()=>{});}
+  });
+}
+
 /* 12 Video modal */
 function openVideo(src){
   const m=document.getElementById("modal"),v=document.getElementById("modalVideo");
-  v.src=src;m.classList.add("show");v.play().catch(()=>{});
+  v.src=src;
+  v.load();
+  // Try native fullscreen on the video element directly
+  const requestFS=v.requestFullscreen||v.webkitRequestFullscreen||v.mozRequestFullScreen||v.msRequestFullscreen;
+  if(requestFS){
+    m.classList.add("show");
+    v.play().catch(()=>{});
+    requestFS.call(v).catch(()=>{
+      // Fullscreen denied — just show modal
+    });
+    // When user exits native fullscreen, close modal too
+    const onFSChange=()=>{
+      const fsEl=document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement;
+      if(!fsEl){
+        v.pause();
+        v.removeAttribute("src");
+        v.load();
+        m.classList.remove("show");
+        document.removeEventListener("fullscreenchange",onFSChange);
+        document.removeEventListener("webkitfullscreenchange",onFSChange);
+      }
+    };
+    document.addEventListener("fullscreenchange",onFSChange);
+    document.addEventListener("webkitfullscreenchange",onFSChange);
+  } else {
+    // Fallback: modal only
+    m.classList.add("show");
+    v.play().catch(()=>{});
+  }
 }
 function closeVideo(){
   const m=document.getElementById("modal"),v=document.getElementById("modalVideo");
+  const exitFS=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen;
+  const isFS=document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement;
+  if(isFS&&exitFS) exitFS.call(document).catch(()=>{});
   v.pause();v.removeAttribute("src");v.load();m.classList.remove("show");
 }
 document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeVideo()});
